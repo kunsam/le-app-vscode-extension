@@ -1,0 +1,151 @@
+{
+  "version": "0.1.0",
+  "publisher": "kunsam",
+  "icon": "media/logo.png",
+  "main": "./dist/extension.js",
+  "name": "le-app-vscode-extension",
+  "description": "letote app code tool",
+  "engines": {
+    "vscode": "^1.36.0"
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test-compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "publish": "vsce publish minor",
+    "webpack": "webpack --mode development",
+    "vscode:prepublish": "webpack --mode production",
+    "webpack-dev": "webpack --mode development --watch",
+    "add-vscode-type-on-master": "npx vscode-dts master"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.2",
+    "@types/lodash": "^4.14.144",
+    "@types/node": "^10.12.21",
+    "@types/webpack": "^4.39.4",
+    "ts-loader": "^6.2.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "file-system": "^2.2.2",
+    "le-ts-code-tool": "^1.0.47",
+    "lodash": "^4.17.15",
+    "url-parse": "^1.4.7"
+  },
+  "activationEvents": [
+    "onView:LeAppPlugin",
+    "onCommand:LeAppPlugin.activeRouterManager",
+    "onCommand:LeAppPlugin.SearchRouter",
+    "onCommand:LeAppPlugin.showFileParentsInPick"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "LeAppPlugin-explorer",
+          "title": "LeAppPlugin",
+          "icon": "media/dep.svg"
+        }
+      ]
+    },
+    "views": {
+      "LeAppPlugin-explorer": [
+        {
+          "id": "LeAppPlugin",
+          "name": "LeApp"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "LeAppPlugin.SearchRouter",
+        "title": "Search Router"
+      },
+      {
+        "command": "LeAppPlugin.showFileParentsInPick",
+        "title": "show file parents"
+      },
+      {
+        "command": "LeAppPlugin.activeRouterManager",
+        "title": "激活路由管理器"
+      },
+      {
+        "command": "LeAppPlugin.refreshRouterManager",
+        "title": "刷新路由管理器"
+      },
+      {
+        "command": "LeAppPlugin.openWorkTileTaskInBroswer",
+        "title": "在 Worktile 中打开"
+      },
+      {
+        "command": "LeAppPlugin.searchCodeWithWorkTileNode",
+        "title": "追踪代码"
+      },
+      {
+        "command": "LeAppPlugin.startTrackCodeServer",
+        "title": "启动追踪服务器"
+      },
+      {
+        "command": "LeAppPlugin.closeTrackCodeServer",
+        "title": "关闭追踪服务器"
+      },
+      {
+        "command": "LeAppPlugin.refreshWorkTileTasks",
+        "title": "刷新 Worktile 任务列表"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "LeAppPlugin.SearchRouter",
+        "mac": "cmd+l cmd+o",
+        "key": "ctrl+l ctrl+o"
+      },
+      {
+        "command": "LeAppPlugin.showFileParentsInPick",
+        "mac": "cmd+l cmd+4",
+        "key": "ctrl+l ctrl+4",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "commandPalette": [],
+      "view/title": [
+        {
+          "command": "LeAppPlugin.refreshRouterManager",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@1"
+        },
+        {
+          "command": "LeAppPlugin.refreshWorkTileTasks",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@2"
+        },
+        {
+          "command": "LeAppPlugin.startTrackCodeServer",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@3"
+        },
+        {
+          "command": "LeAppPlugin.closeTrackCodeServer",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@4"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "LeAppPlugin.openWorkTileTaskInBroswer",
+          "when": "view == LeAppPlugin"
+        },
+        {
+          "command": "LeAppPlugin.searchCodeWithWorkTileNode",
+          "when": "view == LeAppPlugin"
+        }
+      ],
+      "editor/context": []
+    }
+  }
+}
