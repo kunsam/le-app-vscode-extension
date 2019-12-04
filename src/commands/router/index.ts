@@ -104,6 +104,7 @@ export default class NavigatorsCommand {
       }
     });
     if (cacheImports) {
+      vscode.window.showInformationMessage("navigatorTree使用缓存");
       await this.navigatorTree.initQueryMap();
     } else {
       vscode.window

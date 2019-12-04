@@ -32,7 +32,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "file-system": "^2.2.2",
-    "le-ts-code-tool": "^1.0.47",
+    "le-ts-code-tool": "^1.0.48",
     "lodash": "^4.17.15",
     "url-parse": "^1.4.7"
   },
