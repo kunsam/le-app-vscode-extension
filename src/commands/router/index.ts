@@ -34,7 +34,7 @@ const EXTRA_NAVIGATORS: LeTsCode.PathComponentPathPair[] = [
   },
   {
     path: "Brands",
-    componentRelativePath: "src/containers/brand/brand_list.js"
+    componentRelativePath: "src/containers/brand/brands.js"
   },
   {
     path: "Totes",
