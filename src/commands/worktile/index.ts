@@ -3,21 +3,15 @@ import * as vscode from "vscode";
 import { WorkTileTreeView } from "./worktile_tree_view";
 import { CommonUIViewNode } from "./typing";
 import NavigatorsCommand from "../router";
-import {
-  FileImportUtil,
-  LeFileContentManager,
-  LeAppNavigator
-} from "le-ts-code-tool";
-import { ROOT_PATH, CONTENT_MANAGER_CONFIG } from "../../config";
+import { LeFileContentManager, LeAppNavigator } from "le-ts-code-tool";
+import { CONTENT_MANAGER_CONFIG } from "../../config";
 import {
   GotoTextDocument,
   GotoTextDocumentWithFilePaths
 } from "../../extensionUtil";
-import WorktileCommandUtil from "./command_util";
 import { WorkTileTaskProvider } from "./task_provider";
 import * as express from "express";
 import * as http from "http";
-import * as UrlParse from "url-parse";
 
 export default class WorktileCommand {
   private _server: http.Server;
@@ -35,7 +29,6 @@ export default class WorktileCommand {
   }
 
   async initBugServer() {
-    // https://localhost:3600/bug?link=https://wechat-staging1.letote.cn/home&user=sam@letote.cn&tags=%E9%A1%BA%E4%B8%B0%E5%8D%95%E5%8F%B7,%E5%93%88%E5%93%88%E5%93%88
     const config = await WorkTileTaskProvider.loadConfig();
     if (config) {
       const app = express();
@@ -56,8 +49,9 @@ export default class WorktileCommand {
         }
         const query = req.query;
         this._trackCodeWithData({
-          link: query.link,
-          tags: (query.tags && query.tags.split(",")) || []
+          navigatorName: query.navigatorName,
+          userPhone: query.userPhone,
+          tag: decodeURIComponent(query.tag)
         }).then(() => {
           res.send(true);
         });
@@ -86,15 +80,6 @@ export default class WorktileCommand {
     });
   }
 
-  async searchCodeWithWorkTileNode(selectedNode: CommonUIViewNode) {
-    this._trackCodeWithData({
-      tags: selectedNode._origin.tags,
-      link: selectedNode._origin.route_link
-        .replace(/^link(\:|\：)/, "")
-        .replace(/\s/g, "")
-    });
-  }
-
   initCommnd(context: vscode.ExtensionContext) {
     this._view = new WorkTileTreeView();
     this._view.init();
@@ -120,40 +105,24 @@ export default class WorktileCommand {
         this.openWorkTileTaskInBroswer.bind(this)
       )
     );
-    // 代码追踪
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        "LeAppPlugin.searchCodeWithWorkTileNode",
-        this.searchCodeWithWorkTileNode.bind(this)
-      )
-    );
   }
 
-  private async _trackCodeWithData(data: { link: string; tags: string[] }) {
-    let link = data.link;
-    if (link) {
+  private async _trackCodeWithData(data: {
+    navigatorName: string;
+    tag: string;
+    userPhone: string;
+  }) {
+    const { navigatorName, userPhone, tag } = data;
+    if (navigatorName) {
       if (!this._routerCommand.navigatorTree) {
         await vscode.commands.executeCommand("LeAppPlugin.activeRouterManager");
       }
-      try {
-        const parsed = UrlParse(link);
-        link = parsed.pathname.split("?")[0];
-      } catch (e) {
-        vscode.window.showInformationMessage("存在Link但解析失败");
-      }
-      const names = link
-        .split("/")
-        .map(d => (isNaN(parseInt(d)) ? d : parseInt(d)))
-        .filter(a => a !== "");
 
-      // 动态映射成静态
-      const map_names = WorktileCommandUtil.routerParamsMap(names);
-      link = "/" + map_names.join("/");
-      let componentRelativePath = this._routerCommand.navigatorTree.queryNavigatorByName(
-        link
+      let fsPath = this._routerCommand.navigatorTree.queryNavigatorByName(
+        navigatorName
       );
 
-      if (!componentRelativePath) {
+      if (!fsPath) {
         vscode.window.showInformationMessage(
           "自动分析失败，请根据提示手动确认路由路径"
         );
@@ -164,30 +133,22 @@ export default class WorktileCommand {
             })
           ),
           {
-            placeHolder: link
+            placeHolder: navigatorName
           }
         );
-        componentRelativePath = this._routerCommand.navigatorTree.queryNavigatorByName(
+        fsPath = this._routerCommand.navigatorTree.queryNavigatorByName(
           result.label
         );
       }
-      if (componentRelativePath) {
-        const filePath = FileImportUtil.getFileAbsolutePath(
-          componentRelativePath,
-          ROOT_PATH,
-          true
-        );
-        GotoTextDocument(filePath);
+      if (fsPath) {
+        GotoTextDocument(fsPath);
       }
 
-      let isHasShowResult = !!componentRelativePath;
-
-      if (data.tags) {
+      let isHasShowResult = !!fsPath;
+      if (tag) {
         let tags_file_paths_map = new Map();
-        data.tags.forEach(tag => {
-          this._leConentManager.queryChineseCharacter(tag).forEach(filepath => {
-            tags_file_paths_map.set(filepath, true);
-          });
+        this._leConentManager.queryChineseCharacter(tag).forEach(filepath => {
+          tags_file_paths_map.set(filepath, true);
         });
         if (tags_file_paths_map.size > 0) {
           if (tags_file_paths_map.size <= 4) {
@@ -209,6 +170,9 @@ export default class WorktileCommand {
         vscode.window.showInformationMessage(
           "未能找到节点代码位置，请指定link/tag"
         );
+      } else {
+        vscode.window.showInformationMessage(`加载成功!用户手机号已复制`);
+        vscode.env.clipboard.writeText(userPhone);
       }
     }
   }

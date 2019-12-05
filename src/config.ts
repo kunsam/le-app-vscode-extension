@@ -7,5 +7,5 @@ export const ROOT_PATH: string = vscode.workspace.workspaceFolders[0].uri.path;
 
 export const CONTENT_MANAGER_CONFIG: LeFileContentManagerConfig = {
   projectDirPath: ROOT_PATH,
-  folderPaths: ["src/app/components", "src/app/containers", "storybook/stories"]
+  folderPaths: ["src/", "storybook/stories"]
 };

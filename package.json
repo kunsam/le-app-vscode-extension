@@ -32,7 +32,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "file-system": "^2.2.2",
-    "le-ts-code-tool": "^1.0.48",
+    "le-ts-code-tool": "^1.0.50",
     "lodash": "^4.17.15",
     "url-parse": "^1.4.7"
   },
@@ -80,10 +80,6 @@
       {
         "command": "LeAppPlugin.openWorkTileTaskInBroswer",
         "title": "在 Worktile 中打开"
-      },
-      {
-        "command": "LeAppPlugin.searchCodeWithWorkTileNode",
-        "title": "追踪代码"
       },
       {
         "command": "LeAppPlugin.startTrackCodeServer",
@@ -138,10 +134,6 @@
       "view/item/context": [
         {
           "command": "LeAppPlugin.openWorkTileTaskInBroswer",
-          "when": "view == LeAppPlugin"
-        },
-        {
-          "command": "LeAppPlugin.searchCodeWithWorkTileNode",
           "when": "view == LeAppPlugin"
         }
       ],
