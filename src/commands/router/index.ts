@@ -243,17 +243,8 @@ export default class NavigatorsCommand {
         );
 
         if (result && result.label) {
-          const componentRelativePath = this.navigatorTree.queryNavigatorByName(
-            result.label
-          );
-          if (componentRelativePath) {
-            const filePath = FileImportUtil.getFileAbsolutePath(
-              componentRelativePath,
-              ROOT_PATH,
-              true
-            );
-            GotoTextDocument(filePath);
-          }
+          const fsPath = this.navigatorTree.queryNavigatorByName(result.label);
+          GotoTextDocument(fsPath);
         }
       })
     );
@@ -293,7 +284,7 @@ export default class NavigatorsCommand {
               }))
             );
           } else {
-            vscode.window.showInformationMessage('暂无结果!')
+            vscode.window.showInformationMessage("暂无结果!");
           }
         }
       )
