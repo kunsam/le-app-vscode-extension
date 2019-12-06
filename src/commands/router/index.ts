@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as fse from "file-system";
 import * as path from "path";
 import * as vscode from "vscode";
-import { ROOT_PATH, PROJECT_DIR } from "../../config";
+import { ROOT_PATH, PROJECT_DIR, CONTENT_MANAGER_CONFIG } from "../../config";
 import { pickFiles2Open, GotoTextDocument } from "../../extensionUtil";
 import { ShowFileParentsInPickDataNode } from "./type";
 import {
@@ -10,7 +10,8 @@ import {
   LeTsCode,
   FileImportUtil,
   LeAppUtil,
-  LeAppNavigator
+  LeAppNavigator,
+  LeFileContentManager
 } from "le-ts-code-tool";
 
 const AllIMPORTS_CACHE_PATH = path.join(
@@ -68,7 +69,7 @@ export default class NavigatorsCommand {
     string,
     { result: ShowFileParentsInPickDataNode[]; lastQueryTime: number }
   > = new Map();
-
+  private _leConentManager: LeFileContentManager;
   loadNavigators() {
     const navigators = LeAppUtil.ResolveNavigatorConfig(
       [path.join(ROOT_PATH, "src/navigation/index.js")],
@@ -255,6 +256,47 @@ export default class NavigatorsCommand {
           }
         }
       })
+    );
+
+    // 导航搜索
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "LeAppPlugin.showNavigatorFromList",
+        async () => {
+          if (!this.navigatorTree) {
+            await vscode.commands.executeCommand(
+              "LeAppPlugin.activeRouterManager"
+            );
+          }
+          const uri = vscode.window.activeTextEditor.document.uri;
+          if (!uri) {
+            vscode.window.showInformationMessage("不存在打开的文档");
+            return;
+          }
+          if (!this._leConentManager) {
+            this._leConentManager = new LeFileContentManager({
+              ...CONTENT_MANAGER_CONFIG,
+              navigators: this.navigatorTree.navigators.map(n => ({
+                path: n.name,
+                fsPath: n.fsPath
+              }))
+            });
+          }
+          const targetData = this._leConentManager.queryNavigatorTargets(
+            uri.fsPath
+          );
+          if (targetData.from) {
+            pickFiles2Open(
+              targetData.from.map(f => ({
+                label: `➡️${path.relative(ROOT_PATH, f)}`,
+                target: f
+              }))
+            );
+          } else {
+            vscode.window.showInformationMessage('暂无结果!')
+          }
+        }
+      )
     );
   }
 
