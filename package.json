@@ -32,7 +32,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "file-system": "^2.2.2",
-    "le-ts-code-tool": "^1.0.53",
+    "le-ts-code-tool": "^1.0.56",
     "lodash": "^4.17.15",
     "url-parse": "^1.4.7"
   },
@@ -41,7 +41,10 @@
     "onCommand:LeAppPlugin.activeRouterManager",
     "onCommand:LeAppPlugin.SearchRouter",
     "onCommand:LeAppPlugin.showFileParentsInPick",
-    "onCommand:LeAppPlugin.showNavigatorFromList"
+    "onCommand:LeAppPlugin.showNavigatorFromList",
+    "onCommand:LeAppPlugin.NavigatorMode.enterLeft",
+    "onCommand:LeAppPlugin.NavigatorMode.enterRight",
+    "onCommand:LeAppPlugin.enterFileNavigatorMode"
   ],
   "contributes": {
     "viewsContainers": {
@@ -97,6 +100,18 @@
       {
         "command": "LeAppPlugin.showNavigatorFromList",
         "title": "showNavigatorFromList"
+      },
+      {
+        "command": "LeAppPlugin.enterFileNavigatorMode",
+        "title": "进入导航调试模式"
+      },
+      {
+        "command": "LeAppPlugin.NavigatorMode.enterLeft",
+        "title": "enterLeft"
+      },
+      {
+        "command": "LeAppPlugin.NavigatorMode.enterRight",
+        "title": "enterRight"
       }
     ],
     "keybindings": [
@@ -115,6 +130,18 @@
         "command": "LeAppPlugin.showNavigatorFromList",
         "mac": "cmd+l cmd+5",
         "key": "ctrl+l ctrl+5",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "LeAppPlugin.NavigatorMode.enterLeft",
+        "mac": "cmd+l cmd+9",
+        "key": "ctrl+l ctrl+9",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "LeAppPlugin.NavigatorMode.enterRight",
+        "mac": "cmd+l cmd+0",
+        "key": "ctrl+l ctrl+0",
         "when": "editorTextFocus"
       }
     ],
@@ -148,7 +175,13 @@
           "when": "view == LeAppPlugin"
         }
       ],
-      "editor/context": []
+      "editor/context": [
+        {
+          "when": "editorTextFocus",
+          "command": "LeAppPlugin.enterFileNavigatorMode",
+          "group": "navigation@11"
+        }
+      ]
     }
   }
 }

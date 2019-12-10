@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { LeTsCode, LeFileContentManagerConfig } from "le-ts-code-tool";
+import { LeFileContentManagerConfig } from "le-ts-code-tool";
 
 export const PROJECT_DIR = "/.le_app_plugin";
 
