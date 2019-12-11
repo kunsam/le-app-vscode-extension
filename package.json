@@ -38,6 +38,7 @@
   },
   "activationEvents": [
     "onView:LeAppPlugin",
+    "onWebviewPanel:LeAppPluginAdmin",
     "onCommand:LeAppPlugin.activeRouterManager",
     "onCommand:LeAppPlugin.SearchRouter",
     "onCommand:LeAppPlugin.showFileParentsInPick",
@@ -112,6 +113,16 @@
       {
         "command": "LeAppPlugin.NavigatorMode.enterRight",
         "title": "enterRight"
+      },
+      {
+        "command": "LeAppPlugin.startAdminPanel",
+        "title": "打开项目后台（vscode）",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.openExternalAdmin",
+        "title": "打开项目后台(网页)",
+        "category": "LeAppPlugin"
       }
     ],
     "keybindings": [
@@ -167,6 +178,16 @@
           "command": "LeAppPlugin.closeTrackCodeServer",
           "when": "view == LeAppPlugin",
           "group": "myGroup@4"
+        },
+        {
+          "command": "LeAppPlugin.openExternalAdmin",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@5"
+        },
+        {
+          "command": "LeAppPlugin.startAdminPanel",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@6"
         }
       ],
       "view/item/context": [
