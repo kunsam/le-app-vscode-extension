@@ -5,6 +5,7 @@
   "main": "./dist/extension.js",
   "name": "le-app-vscode-extension",
   "description": "letote app code tool",
+  "repository": "https://github.com/kunsam/le-app-vscode-extension.git",
   "engines": {
     "vscode": "^1.36.0"
   },
