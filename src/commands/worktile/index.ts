@@ -49,8 +49,8 @@ export default class WorktileCommand {
         }
         const query = req.query;
         this._trackCodeWithData({
-          navigatorName: query.navigatorName,
-          userPhone: query.userPhone,
+          navigatorName: query.screen_name,
+          userPhone: query.telephone,
           tag: decodeURIComponent(query.tag)
         }).then(() => {
           res.send(true);
