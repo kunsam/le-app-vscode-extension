@@ -9,9 +9,9 @@ import {
   NavigatorTree,
   LeTsCode,
   LeAppUtil,
-  LeAppNavigator,
-  LeFileContentManager
+  LeAppNavigator
 } from "le-ts-code-tool";
+import { SCREEN_TAGS } from "./screen_search_tag";
 
 const AllIMPORTS_CACHE_PATH = path.join(
   ROOT_PATH,
@@ -255,7 +255,7 @@ export default class NavigatorsCommand {
       })
     );
 
-    // 导航搜索
+    // 导航搜索 [从谁跳转过来的]
     context.subscriptions.push(
       vscode.commands.registerCommand(
         "LeAppPlugin.showNavigatorFromList",
@@ -313,6 +313,53 @@ export default class NavigatorsCommand {
       )
     );
     this._registerNavigatorModeCommands(context);
+    this._registerSearchRouterByTagCommand(context);
+  }
+
+  _registerSearchRouterByTagCommand(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "LeAppPlugin.SearchRouterByTag",
+        async () => {
+          if (!this.navigatorTree) {
+            await vscode.commands.executeCommand(
+              "LeAppPlugin.activeRouterManager"
+            );
+          }
+          const tag = await vscode.window.showInputBox({
+            placeHolder: "请输入文字"
+          });
+          let resultList = [];
+          let resultListMap = new Map();
+          if (tag) {
+            SCREEN_TAGS.forEach(data => {
+              data.tags.forEach(dtag => {
+                if (dtag.includes(tag)) {
+                  if (resultListMap.has(data.screen)) {
+                    return;
+                  }
+                  resultListMap.set(data.screen, true);
+                  resultList.push({
+                    label: data.screen,
+                    target: this.navigatorTree.queryNavigatorByName(data.screen)
+                  });
+                }
+              });
+            });
+          }
+          pickFiles2Open(
+            resultList.filter(r => !!r.target),
+            false,
+            undefined,
+            {
+              onPick: result => {
+                vscode.env.clipboard.writeText(`/${result.label}`);
+              }
+            }
+          );
+        }
+      )
+    );
   }
 
   _registerNavigatorModeCommands(context: vscode.ExtensionContext) {

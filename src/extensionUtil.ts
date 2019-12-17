@@ -70,7 +70,8 @@ export async function GotoTextDocumentWithFilePaths(files: string[]) {
 export function pickFiles2Open(
   files: { label: string; target?: string; location?: any }[],
   isOpenFirst = true,
-  placeHolder = "请选择打开的文件"
+  placeHolder = "请选择打开的文件",
+  { onPick = (file: any) => {} } = {}
 ) {
   if (!files.length) {
     vscode.window.showInformationMessage("暂无结果");
@@ -78,6 +79,7 @@ export function pickFiles2Open(
   }
   if (files.length === 1 && isOpenFirst) {
     if (files[0].location) {
+      onPick(files[0])
       GotoTextDocument(
         FileImportUtil.getFileAbsolutePath(
           files[0].location.filePath,
@@ -97,6 +99,7 @@ export function pickFiles2Open(
           placeHolder
         })
         .then(result => {
+          onPick(result)
           if (result && result.location) {
             GotoTextDocument(
               FileImportUtil.getFileAbsolutePath(
