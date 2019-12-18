@@ -71,7 +71,7 @@ export function pickFiles2Open(
   files: { label: string; target?: string; location?: any }[],
   isOpenFirst = true,
   placeHolder = "请选择打开的文件",
-  { onPick = (file: any) => {} } = {}
+  props: { onPick?: Function } = {}
 ) {
   if (!files.length) {
     vscode.window.showInformationMessage("暂无结果");
@@ -79,7 +79,10 @@ export function pickFiles2Open(
   }
   if (files.length === 1 && isOpenFirst) {
     if (files[0].location) {
-      onPick(files[0])
+      if (props.onPick) {
+        props.onPick(files[0]);
+        return;
+      }
       GotoTextDocument(
         FileImportUtil.getFileAbsolutePath(
           files[0].location.filePath,
@@ -99,7 +102,10 @@ export function pickFiles2Open(
           placeHolder
         })
         .then(result => {
-          onPick(result)
+          if (props.onPick) {
+            props.onPick(result);
+            return;
+          }
           if (result && result.location) {
             GotoTextDocument(
               FileImportUtil.getFileAbsolutePath(
@@ -122,4 +128,33 @@ export function pickFiles2Open(
         });
     }
   }
+}
+
+export function vscodeInsertText(
+  getText: (i: number) => string,
+  i: number = 0,
+  wasEmpty: boolean = false
+) {
+  let activeEditor = vscode.window.activeTextEditor;
+  if (!activeEditor) {
+    return;
+  }
+
+  let sels = activeEditor.selections;
+
+  if (i > 0 && wasEmpty) {
+    sels[i - 1] = new vscode.Selection(sels[i - 1].end, sels[i - 1].end);
+    activeEditor.selections = sels; // required or the selection updates will be ignored! 😱
+  }
+
+  if (i < 0 || i >= sels.length) {
+    return;
+  }
+
+  let isEmpty = sels[i].isEmpty;
+  activeEditor
+    .edit(edit => edit.replace(sels[i], getText(i)))
+    .then(x => {
+      vscodeInsertText(getText, i + 1, isEmpty);
+    });
 }

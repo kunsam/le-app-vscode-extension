@@ -3,7 +3,11 @@ import * as fse from "file-system";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ROOT_PATH, PROJECT_DIR, CONTENT_MANAGER_CONFIG } from "../../config";
-import { pickFiles2Open, GotoTextDocument } from "../../extensionUtil";
+import {
+  pickFiles2Open,
+  GotoTextDocument,
+  vscodeInsertText
+} from "../../extensionUtil";
 import { ShowFileParentsInPickDataNode } from "./type";
 import {
   NavigatorTree,
@@ -353,7 +357,7 @@ export default class NavigatorsCommand {
             undefined,
             {
               onPick: result => {
-                vscode.env.clipboard.writeText(`/${result.label}`);
+                vscodeInsertText(x => `navigation.navigate('${result.label}')`);
               }
             }
           );
