@@ -104,6 +104,14 @@
         "title": "关闭追踪服务器"
       },
       {
+        "command": "LeAppPlugin.startLeCoderServer",
+        "title": "启动UI编码器"
+      },
+      {
+        "command": "LeAppPlugin.closeLeCoderServer",
+        "title": "关闭UI编码器"
+      },
+      {
         "command": "LeAppPlugin.refreshWorkTileTasks",
         "title": "刷新 Worktile 任务列表"
       },
@@ -213,6 +221,16 @@
           "command": "LeAppPlugin.startAdminPanel",
           "when": "view == LeAppPlugin",
           "group": "myGroup@6"
+        },
+        {
+          "command": "LeAppPlugin.startLeCoderServer",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@7"
+        },
+        {
+          "command": "LeAppPlugin.closeLeCoderServer",
+          "when": "view == LeAppPlugin",
+          "group": "myGroup@8"
         }
       ],
       "view/item/context": [
