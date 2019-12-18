@@ -3,11 +3,12 @@ import * as vscode from "vscode";
 import NavigatorsCommand from "./commands/router";
 import { PluginTreeDataProvider } from "./treeprovider";
 import WorktileCommand from "./commands/worktile";
-import { AdminWebviewPanelCommands } from "./commands/adminWebviewPanel/admin_webview_panel";
+import { CoderCommand } from './commands/coder/coder'
 
 export async function activate(context: vscode.ExtensionContext) {
   const navigatorsCommand = new NavigatorsCommand(context);
   new WorktileCommand(context, navigatorsCommand);
+  new CoderCommand(context);
   // new AdminWebviewPanelCommands(context);
   // 暂时不用这个，直接用我起的 admin 去用就好了
   context.subscriptions.push(

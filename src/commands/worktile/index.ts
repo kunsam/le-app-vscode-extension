@@ -23,7 +23,10 @@ export default class WorktileCommand {
     context: vscode.ExtensionContext,
     routerCommand: NavigatorsCommand
   ) {
-    this.initCommnd(context);
+    vscode.commands.registerCommand("LeAppPlugin.refreshWorkTileTasks", () => {
+      this.refreshWorkTileTasks(context);
+    });
+
     this._routerCommand = routerCommand;
     this._leConentManager = new LeFileContentManager(CONTENT_MANAGER_CONFIG);
   }
@@ -64,11 +67,12 @@ export default class WorktileCommand {
     }
   }
 
-  refreshWorkTileTasks() {
-    this._view.reset().then(() => {
-      vscode.window.showInformationMessage("更新成功");
-    });
-  }
+  refreshWorkTileTasks = context => {
+    if (!this._view) {
+      this.initCommnd(context);
+    }
+    this._view.reset()
+  };
 
   openWorkTileTaskInBroswer(selectedNode: CommonUIViewNode) {
     const id = selectedNode._origin.identifier;
@@ -93,11 +97,6 @@ export default class WorktileCommand {
       this._server = undefined;
       vscode.window.showInformationMessage("已关闭代码跟踪服务器");
     });
-
-    vscode.commands.registerCommand(
-      "LeAppPlugin.refreshWorkTileTasks",
-      this.refreshWorkTileTasks.bind(this)
-    );
 
     context.subscriptions.push(
       vscode.commands.registerCommand(

@@ -47,9 +47,16 @@
     "onCommand:LeAppPlugin.NavigatorMode.enterLeft",
     "onCommand:LeAppPlugin.NavigatorMode.enterRight",
     "onCommand:LeAppPlugin.enterFileNavigatorMode",
-    "onCommand:LeAppPlugin.SearchRouterByTag"
+    "onCommand:LeAppPlugin.SearchRouterByTag",
+    "onCommand:LeAppPlugin.StartLeReactCoder"
   ],
   "contributes": {
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets.json"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -129,6 +136,11 @@
       {
         "command": "LeAppPlugin.SearchRouterByTag",
         "title": "文字搜索路由",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.StartLeReactCoder",
+        "title": "启动LeUI辅助编码器",
         "category": "LeAppPlugin"
       }
     ],
@@ -214,6 +226,11 @@
           "when": "editorTextFocus",
           "command": "LeAppPlugin.enterFileNavigatorMode",
           "group": "navigation@11"
+        },
+        {
+          "when": "editorTextFocus",
+          "command": "LeAppPlugin.StartLeReactCoder",
+          "group": "navigation@2"
         }
       ]
     }

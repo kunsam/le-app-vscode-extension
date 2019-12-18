@@ -33,6 +33,7 @@ export class WorkTileTaskProvider {
         if (fs.existsSync(config_path)) {
           res(__non_webpack_require__(config_path));
         } else {
+          res(undefined);
           vscode.window.showErrorMessage(`不存在路径 ${config_path}`);
         }
       } catch (e) {
@@ -105,6 +106,9 @@ export class WorkTileTaskProvider {
 
   async setCookie(progress?: vscode.Progress<any>): Promise<void> {
     const config = await WorkTileTaskProvider.loadConfig();
+    if (!config) {
+      return;
+    }
     progress && progress.report({ increment: 10, message: "读取配置文件..." });
     const auth = await this.apiFetchAuth(config);
     progress && progress.report({ increment: 30, message: "登录worktile..." });
@@ -217,14 +221,14 @@ export class WorkTileTaskProvider {
       await this.setCookie(progress);
     }
     if (!this._cookie) {
-      if (this._reLoginCounter > 6) {
-        this._reLoginCounter = 0;
-        return [DEFAULT_NODE];
-      }
-      await new Promise(res => setTimeout(() => res(true), 3000));
-      vscode.window.showInformationMessage("登录失败，正在重试");
-      this._reLoginCounter++;
-      return await this.apiGetMyTasks(progress);
+      // if (this._reLoginCounter > 6) {
+      // this._reLoginCounter = 0;
+      return [DEFAULT_NODE];
+      // }
+      // await new Promise(res => setTimeout(() => res(true), 3000));
+      // vscode.window.showInformationMessage("登录失败，正在重试");
+      // this._reLoginCounter++;
+      // return await this.apiGetMyTasks(progress);
     }
 
     if (this._cookie) {

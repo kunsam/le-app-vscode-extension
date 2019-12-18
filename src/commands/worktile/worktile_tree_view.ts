@@ -122,20 +122,21 @@ export class WorkTileTreeView {
         token.onCancellationRequested(() => {
           console.log("User canceled the long running operation");
         });
-        return new Promise(resolve => {
+        const promise = new Promise(resolve => {
           this._provider.apiGetMyTasks(progress).then(worktile_tasks => {
             this._treeDataProvider = new WorkTileTaskTree(worktile_tasks);
             this._view = vscode.window.createTreeView(WorkTileTreeName, {
               treeDataProvider: this._treeDataProvider,
               showCollapseAll: true
             });
-            this._view.onDidChangeSelection(e => {
-              e.selection.forEach(data => {
-                console.log("onDidChangeSelection");
-              });
-            });
-            resolve();
+            // this._view.onDidChangeSelection(e => {
+            //   e.selection.forEach(data => {
+            //     console.log("onDidChangeSelection");
+            //   });
+            // });
+            resolve(worktile_tasks);
           });
+          return promise;
         });
       }
     );
