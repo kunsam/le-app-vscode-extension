@@ -75,7 +75,6 @@ export class CoderCommand {
   }
 
   private async _trackData(data: { resultString: string }) {
-    console.log(vscode.window.activeTextEditor)
     return vscodeInsertText(x => data.resultString);
   }
 }
