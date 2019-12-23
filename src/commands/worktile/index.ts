@@ -27,6 +27,7 @@ export default class WorktileCommand {
       this.refreshWorkTileTasks(context);
     });
 
+    this.initCoderTrackerCommands();
     this._routerCommand = routerCommand;
     this._leConentManager = new LeFileContentManager(CONTENT_MANAGER_CONFIG);
   }
@@ -71,7 +72,7 @@ export default class WorktileCommand {
     if (!this._view) {
       this.initCommnd(context);
     }
-    this._view.reset()
+    this._view.reset();
   };
 
   openWorkTileTaskInBroswer(selectedNode: CommonUIViewNode) {
@@ -84,10 +85,7 @@ export default class WorktileCommand {
     });
   }
 
-  initCommnd(context: vscode.ExtensionContext) {
-    this._view = new WorkTileTreeView();
-    this._view.init();
-
+  initCoderTrackerCommands = () => {
     vscode.commands.registerCommand(
       "LeAppPlugin.startTrackCodeServer",
       this.initBugServer.bind(this)
@@ -97,6 +95,11 @@ export default class WorktileCommand {
       this._server = undefined;
       vscode.window.showInformationMessage("已关闭代码跟踪服务器");
     });
+  };
+
+  initCommnd(context: vscode.ExtensionContext) {
+    this._view = new WorkTileTreeView();
+    this._view.init();
 
     context.subscriptions.push(
       vscode.commands.registerCommand(
