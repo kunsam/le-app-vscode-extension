@@ -1,5 +1,5 @@
 export interface SearchableCommand {
-	id: string
+	id?: string
 	name: string
 	tags: string[]
 }
@@ -73,18 +73,18 @@ export const Commands: SearchableCommand[] = [
 
 export const HelpCommands: SearchableCommand[] = [
 	{
-    id: "LeAppPlugin.refreshWorkTileTasks",
+    // id: "LeAppPlugin.refreshWorkTileTasks",
     name: "刷新worktile任务列表",
-    tags: ['插件菜单中', '[Pending]可用来追踪代码']
+    tags: ['插件菜单中使用', '[Pending]可用来追踪代码']
 	},
 	{
-		id: 'LeAppPlugin.closeTrackCodeServer',
+		// id: 'LeAppPlugin.closeTrackCodeServer',
 		name: "关闭代码追踪器",
-		tags: []
+		tags: ['插件菜单中使用']
 	},
 	{
-		id: 'LeAppPlugin.closeLeCoderServer',
+		// id: 'LeAppPlugin.closeLeCoderServer',
 		name: "关闭辅助编码器",
-		tags: []
+		tags: ['插件菜单中使用']
 	}
 ]
