@@ -44,11 +44,10 @@
     "onCommand:LeAppPlugin.SearchRouter",
     "onCommand:LeAppPlugin.showFileParentsInPick",
     "onCommand:LeAppPlugin.showNavigatorFromList",
-    "onCommand:LeAppPlugin.NavigatorMode.enterLeft",
-    "onCommand:LeAppPlugin.NavigatorMode.enterRight",
     "onCommand:LeAppPlugin.enterFileNavigatorMode",
     "onCommand:LeAppPlugin.SearchRouterByTag",
-    "onCommand:LeAppPlugin.StartLeReactCoder"
+    "onCommand:LeAppPlugin.StartLeReactCoder",
+    "onCommand:LeAppPlugin.openExtensionSearchEgnine"
   ],
   "contributes": {
     "snippets": [
@@ -113,23 +112,11 @@
       },
       {
         "command": "LeAppPlugin.refreshWorkTileTasks",
-        "title": "刷新 Worktile 任务列表"
+        "title": "刷新Worktile列表"
       },
       {
         "command": "LeAppPlugin.showNavigatorFromList",
         "title": "showNavigatorFromList"
-      },
-      {
-        "command": "LeAppPlugin.enterFileNavigatorMode",
-        "title": "进入导航调试模式"
-      },
-      {
-        "command": "LeAppPlugin.NavigatorMode.enterLeft",
-        "title": "enterLeft"
-      },
-      {
-        "command": "LeAppPlugin.NavigatorMode.enterRight",
-        "title": "enterRight"
       },
       {
         "command": "LeAppPlugin.startAdminPanel",
@@ -150,40 +137,26 @@
         "command": "LeAppPlugin.StartLeReactCoder",
         "title": "启动LeUI辅助编码器",
         "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.openExtensionSearchEgnine",
+        "title": "启动插件搜索入口",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.checkHelp",
+        "title": "启动插件搜索入口",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.getCurrentFileScreenContainer",
+        "title": "查看当前文件的容器文件",
+        "category": "LeAppPlugin"
       }
     ],
     "keybindings": [
       {
-        "command": "LeAppPlugin.SearchRouter",
-        "mac": "cmd+l cmd+o",
-        "key": "ctrl+l ctrl+o"
-      },
-      {
-        "command": "LeAppPlugin.showFileParentsInPick",
-        "mac": "cmd+l cmd+4",
-        "key": "ctrl+l ctrl+4",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "LeAppPlugin.showNavigatorFromList",
-        "mac": "cmd+l cmd+5",
-        "key": "ctrl+l ctrl+5",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "LeAppPlugin.NavigatorMode.enterLeft",
-        "mac": "cmd+l cmd+9",
-        "key": "ctrl+l ctrl+9",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "LeAppPlugin.NavigatorMode.enterRight",
-        "mac": "cmd+l cmd+0",
-        "key": "ctrl+l ctrl+0",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "LeAppPlugin.SearchRouterByTag",
+        "command": "LeAppPlugin.openExtensionSearchEgnine",
         "mac": "cmd+l cmd+l",
         "key": "ctrl+l ctrl+l",
         "when": "editorTextFocus"
@@ -239,18 +212,7 @@
           "when": "view == LeAppPlugin"
         }
       ],
-      "editor/context": [
-        {
-          "when": "editorTextFocus",
-          "command": "LeAppPlugin.enterFileNavigatorMode",
-          "group": "navigation@11"
-        },
-        {
-          "when": "editorTextFocus",
-          "command": "LeAppPlugin.StartLeReactCoder",
-          "group": "navigation@2"
-        }
-      ]
+      "editor/context": []
     }
   }
 }

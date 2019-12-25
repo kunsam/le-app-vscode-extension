@@ -78,9 +78,6 @@ export default class NavigatorsCommand {
     { result: ShowFileParentsInPickDataNode[]; lastQueryTime: number }
   > = new Map();
 
-  private _fileNavigatorMap:
-    | Map<string, { from: string[]; to: string[] }>
-    | undefined;
   loadNavigators() {
     const navigators = LeAppUtil.ResolveNavigatorConfig(
       [path.join(ROOT_PATH, "src/navigation/index.js")],
@@ -115,7 +112,7 @@ export default class NavigatorsCommand {
       }
     });
     if (cacheImports) {
-      vscode.window.showInformationMessage("navigatorTree使用缓存");
+      // vscode.window.showInformationMessage("navigatorTree使用缓存");
       await this.navigatorTree.initQueryMap();
     } else {
       vscode.window
@@ -180,6 +177,32 @@ export default class NavigatorsCommand {
     );
   }
 
+  getFileParentsResult = (uri: vscode.Uri) => {
+    const getResults = () => {
+      const currentTime = new Date().getTime();
+      const cacheResult = this._queryFilesResultCacheMap.get(uri.fsPath);
+      if (cacheResult) {
+        const deltaMinute =
+          (currentTime - cacheResult.lastQueryTime) / (1000 * 600);
+        if (deltaMinute < 30) {
+          this._queryFilesResultCacheMap.delete(uri.fsPath);
+        } else {
+          if (cacheResult.result.length) {
+            return cacheResult.result;
+          }
+        }
+      }
+      const result = this.getFilesParentsResultShowInPick(uri);
+      this._queryFilesResultCacheMap.set(uri.fsPath, {
+        result,
+        lastQueryTime: new Date().getTime()
+      });
+      return result;
+    };
+    const result = getResults();
+    return result;
+  };
+
   initCommands(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       vscode.commands.registerCommand(
@@ -190,34 +213,12 @@ export default class NavigatorsCommand {
               "LeAppPlugin.activeRouterManager"
             );
           }
-
           const uri = vscode.window.activeTextEditor.document.uri;
           if (!uri) {
             vscode.window.showInformationMessage("不存在打开的文档");
             return;
           }
-          const getResults = () => {
-            const currentTime = new Date().getTime();
-            const cacheResult = this._queryFilesResultCacheMap.get(uri.fsPath);
-            if (cacheResult) {
-              const deltaMinute =
-                (currentTime - cacheResult.lastQueryTime) / (1000 * 60);
-              if (deltaMinute < 30) {
-                this._queryFilesResultCacheMap.delete(uri.fsPath);
-              } else {
-                if (cacheResult.result.length) {
-                  return cacheResult.result;
-                }
-              }
-            }
-            const result = this.getFilesParentsResultShowInPick(uri);
-            this._queryFilesResultCacheMap.set(uri.fsPath, {
-              result,
-              lastQueryTime: new Date().getTime()
-            });
-            return result;
-          };
-          const result = getResults();
+          const result = this.getFileParentsResult(uri);
           pickFiles2Open(
             result.map(r =>
               r.labelOnly
@@ -292,10 +293,10 @@ export default class NavigatorsCommand {
       )
     );
 
-    // 进入导航模式
+    // 查找当前文件路由容器
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        "LeAppPlugin.enterFileNavigatorMode",
+        "LeAppPlugin.getCurrentFileScreenContainer",
         async () => {
           if (!this.navigatorTree) {
             await vscode.commands.executeCommand(
@@ -307,16 +308,45 @@ export default class NavigatorsCommand {
             vscode.window.showInformationMessage("不存在打开的文档");
             return;
           }
-          // 向上找到全部父亲
-          this._fileNavigatorMap = this.navigatorTree.getFileNavigatorLinkList(
-            uri.fsPath,
-            CONTENT_MANAGER_CONFIG
-          );
-          vscode.window.showInformationMessage("启动成功");
+          const name = this.navigatorTree.queryNavigatorNameByPath(uri.fsPath);
+          if (name) {
+            vscode.env.clipboard.writeText(name).then(() => {
+              vscode.window.showInformationMessage("已复制到剪切板");
+            });
+          } else {
+            const parentList = this.navigatorTree.getFileNodeParentsFlow(
+              uri.fsPath
+            );
+            let result: { name: string; path: string }[] = [];
+            parentList.forEach(list => {
+              let hasResult = false;
+              list.forEach(data => {
+                if (hasResult) {
+                  return;
+                }
+                const name = this.navigatorTree.queryNavigatorNameByPath(
+                  data.fspath
+                );
+                if (name) {
+                  hasResult = true;
+                  result.push({
+                    name: name,
+                    path: data.fspath
+                  });
+                }
+              });
+            });
+            pickFiles2Open(
+              result.map(r => ({
+                label: r.name,
+                target: r.path
+              }))
+            );
+          }
         }
       )
     );
-    this._registerNavigatorModeCommands(context);
+
     this._registerSearchRouterByTagCommand(context);
   }
 
@@ -361,65 +391,6 @@ export default class NavigatorsCommand {
               }
             }
           );
-        }
-      )
-    );
-  }
-
-  _registerNavigatorModeCommands(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        "LeAppPlugin.NavigatorMode.enterLeft",
-        async () => {
-          const uri = vscode.window.activeTextEditor.document.uri;
-          if (!uri) {
-            vscode.window.showInformationMessage("不存在打开的文档");
-            return;
-          }
-          if (!this._fileNavigatorMap) {
-            vscode.window.showErrorMessage("请先在文件开启导航模式");
-          } else {
-            const data = this._fileNavigatorMap.get(uri.fsPath);
-            if (data) {
-              const list = data.from
-                .map(f => ({
-                  label: this.navigatorTree.queryNavigatorNameByPath(f),
-                  target: f
-                }))
-                .filter(a => !!a.label);
-              pickFiles2Open(list, true, "请选择要进入的Screen");
-            } else {
-              vscode.window.showErrorMessage("暂无导航图");
-            }
-          }
-        }
-      )
-    );
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        "LeAppPlugin.NavigatorMode.enterRight",
-        async () => {
-          const uri = vscode.window.activeTextEditor.document.uri;
-          if (!uri) {
-            vscode.window.showInformationMessage("不存在打开的文档");
-            return;
-          }
-          if (!this._fileNavigatorMap) {
-            vscode.window.showErrorMessage("请先在文件开启导航模式");
-          } else {
-            const data = this._fileNavigatorMap.get(uri.fsPath);
-            if (data) {
-              const list = data.to
-                .map(f => ({
-                  label: this.navigatorTree.queryNavigatorNameByPath(f),
-                  target: f
-                }))
-                .filter(a => !!a.label);
-              pickFiles2Open(list, true, "请选择要进入的Screen");
-            } else {
-              vscode.window.showErrorMessage("暂无导航图");
-            }
-          }
         }
       )
     );

@@ -4,6 +4,7 @@ import NavigatorsCommand from "./commands/router";
 import { PluginTreeDataProvider } from "./treeprovider";
 import WorktileCommand from "./commands/worktile";
 import { CoderCommand } from './commands/coder/coder'
+import { SearchEngineCommands } from "./commands/searchEngine/searchEngine";
 
 export async function activate(context: vscode.ExtensionContext) {
   const navigatorsCommand = new NavigatorsCommand(context);
@@ -19,6 +20,9 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  new SearchEngineCommands(context)
+
+  
   vscode.window.createTreeView("LeAppPlugin", {
     treeDataProvider: new PluginTreeDataProvider([
       {
