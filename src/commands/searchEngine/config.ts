@@ -34,6 +34,13 @@ export const Commands: SearchableCommand[] = [
 		]
 	},
 	{
+		id: 'LeAppPlugin.toggleSpeechRecognitionService',
+		name: '打开/关闭语音识别服务',
+		tags: [
+			'切换语音识别服务状态'
+		]
+	},
+	{
 		id: 'LeAppPlugin.refreshRouterManager',
 		name: '刷新文件分析缓存',
 		tags: [

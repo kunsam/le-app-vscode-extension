@@ -31,11 +31,14 @@
   "dependencies": {
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
+    "crypto-js": "^3.1.9-1",
     "express": "^4.17.1",
     "file-system": "^2.2.2",
     "le-ts-code-tool": "^1.0.56",
     "lodash": "^4.17.15",
-    "url-parse": "^1.4.7"
+    "node-audiorecorder": "^1.4.2",
+    "url-parse": "^1.4.7",
+    "ws": "^7.2.1"
   },
   "activationEvents": [
     "onView:LeAppPlugin",
@@ -47,6 +50,7 @@
     "onCommand:LeAppPlugin.enterFileNavigatorMode",
     "onCommand:LeAppPlugin.SearchRouterByTag",
     "onCommand:LeAppPlugin.StartLeReactCoder",
+    "onCommand:LeAppPlugin.speechRecognition",
     "onCommand:LeAppPlugin.openExtensionSearchEgnine"
   ],
   "contributes": {
@@ -152,6 +156,26 @@
         "command": "LeAppPlugin.getCurrentFileScreenContainer",
         "title": "查看当前文件的容器文件",
         "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.speechRecognition",
+        "title": "打开语音识别",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.toggleSpeechRecognitionService",
+        "title": "切换语音识别服务状态",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.CompletionRNContainer",
+        "title": "容器模板",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.CompletionRNComponent",
+        "title": "组件模板",
+        "category": "LeAppPlugin"
       }
     ],
     "keybindings": [
@@ -160,6 +184,11 @@
         "mac": "cmd+l cmd+l",
         "key": "ctrl+l ctrl+l",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "LeAppPlugin.speechRecognition",
+        "mac": "cmd+l cmd+k",
+        "key": "ctrl+l ctrl+k"
       }
     ],
     "menus": {

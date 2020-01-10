@@ -171,6 +171,7 @@ export default class NavigatorsCommand {
         "LeAppPlugin.refreshRouterManager",
         () => {
           this.navigatorTree = undefined;
+          fs.unlinkSync(AllIMPORTS_CACHE_PATH)
           this.init();
         }
       )
