@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { PROJECT_DIR, ROOT_PATH } from "../../config";
 import { CommandsHelpers } from "./commands_helper";
-import * as fs from 'fs'
+import * as fs from "fs";
 import { selectText } from "../../select";
 const path = require("path");
 const AudioRecorder = require("node-audiorecorder");
@@ -110,16 +110,43 @@ export class AudioRecorderCommands {
         "LeAppPlugin.speechRecognition",
         async () => {
           const filePath = await this.start();
-					const data = await this.connectAndRecognition(filePath);
-					this.handleResult(data as any);
-					fs.unlink(filePath, () => {
-						if (data.status === 'success') {
-							vscode.window.showInformationMessage(`识别成功: ${data.result}`)
-						}
-						if (data.status === 'error') {
-							vscode.window.showInformationMessage(`识别失败`)
-						}
-					})
+          const data = await this.connectAndRecognition(filePath);
+          this.handleResult(data as any);
+          fs.unlink(filePath, () => {
+            if (data.status === "success") {
+              vscode.window.showInformationMessage(`识别成功: ${data.result}`);
+            }
+            if (data.status === "error") {
+              vscode.window.showInformationMessage(`识别失败`);
+            }
+          });
+        }
+      )
+    );
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "LeAppPlugin.checkSpeechRecognitionCommands",
+        () => {
+          vscode.window.showQuickPick([
+            {
+              label: "组件模板"
+						},
+						{
+              label: "容器模板"
+						},
+						{
+              label: "推送分支"
+						},
+						{
+              label: "注册页面"
+						},
+						{
+              label: "文件依赖"
+						},
+						{
+              label: "选中复制"
+						},
+          ]);
         }
       )
     );
@@ -164,8 +191,8 @@ export class AudioRecorderCommands {
     // console.log("Writing new recording file at: ", fileName);
     // Create write stream.
     const fileStream = fs.createWriteStream(fileName, { encoding: "binary" });
-		// Start and write to the file.
-		vscode.window.setStatusBarMessage('开始录制。', 3000)
+    // Start and write to the file.
+    vscode.window.setStatusBarMessage("开始录制。", 3000);
     audioRecorder
       .start()
       .stream()
@@ -196,41 +223,40 @@ export class AudioRecorderCommands {
     return fileName;
   }
 
-  async handleResult(data: { result: string, status: string }) {
-		const { result, status } = data;
-		
+  async handleResult(data: { result: string; status: string }) {
+    const { result, status } = data;
+
     if (status !== "success") {
       vscode.window.showErrorMessage("连接错误，识别失败");
       return;
-		}
+    }
 
-		if (result.includes("组件模板")) {
-			vscode.commands.executeCommand('LeAppPlugin.CompletionRNComponent')
-		}
-		
-		if (result.includes("容器模板")) {
-			vscode.commands.executeCommand('LeAppPlugin.CompletionRNContainer')
-		}
+    if (result.includes("组件模板")) {
+      vscode.commands.executeCommand("LeAppPlugin.CompletionRNComponent");
+    }
 
-		if (result.includes("推送分支")) {
-			CommandsHelpers.gitPush()
-		}
+    if (result.includes("容器模板")) {
+      vscode.commands.executeCommand("LeAppPlugin.CompletionRNContainer");
+    }
 
-		if (result.includes("注册页面")) {
-			CommandsHelpers.insertContainer()
-		}
+    if (result.includes("推送分支")) {
+      CommandsHelpers.gitPush();
+    }
 
-		if (result.includes("文件依赖")) {
-			vscode.commands.executeCommand('LeAppPlugin.showFileParentsInPick')
-		}
+    if (result.includes("注册页面")) {
+      CommandsHelpers.insertContainer();
+    }
 
-		if (result.includes("选中复制")) {
-			const text = selectText({ includeBrack: false });
-			if (text) {
-				vscode.env.clipboard.writeText(text)
-			}
-		}
+    if (result.includes("文件依赖")) {
+      vscode.commands.executeCommand("LeAppPlugin.showFileParentsInPick");
+    }
 
+    if (result.includes("选中复制")) {
+      const text = selectText({ includeBrack: false });
+      if (text) {
+        vscode.env.clipboard.writeText(text);
+      }
+    }
   }
 
   async continueRecognition() {
@@ -256,7 +282,7 @@ export class AudioRecorderCommands {
 
     const audioRecorder = this.audioRecorder;
 
-		// let isInALoop
+    // let isInALoop
     // 连接建立完毕，读取数据进行识别
     ws.on("open", event => {
       console.log("websocket connect!");
@@ -270,20 +296,19 @@ export class AudioRecorderCommands {
       });
       audioRecorder.stream().on("error", function() {
         console.warn("Recording error.");
-			});
-			
+      });
+
       audioRecorder.stream().on(`data`, function(chunk) {
-				// const isNoSignificantVoice = getSendData(status, chunk);
-				console.log(chunk, 'chunkchunk')
+        // const isNoSignificantVoice = getSendData(status, chunk);
+        console.log(chunk, "chunkchunk");
         ws.send(getSendData(status, chunk));
-			});
-			
+      });
     });
 
     let resultString = "";
     // 得到识别结果后进行处理，仅供参考，具体业务具体对待
     ws.on("message", (data, err) => {
-			console.log("message, resultString");
+      console.log("message, resultString");
       if (err) {
         console.log(`err:${err}`);
         return;
@@ -331,7 +356,7 @@ export class AudioRecorderCommands {
     });
     this.activeWs = ws;
   }
-  connectAndRecognition(filePath): Promise<{ result: string, status: string }> {
+  connectAndRecognition(filePath): Promise<{ result: string; status: string }> {
     return new Promise(uploadResolve => {
       // 获取当前时间 RFC1123格式
       let date = new Date().toUTCString();
@@ -372,11 +397,11 @@ export class AudioRecorderCommands {
       // 得到识别结果后进行处理，仅供参考，具体业务具体对待
       ws.on("message", (data, err) => {
         if (err) {
-					console.log(`err:${err}`);
-					uploadResolve({
-						result: err,
-						status: "error"
-					});
+          console.log(`err:${err}`);
+          uploadResolve({
+            result: err,
+            status: "error"
+          });
           return;
         }
         const res = JSON.parse(data);
