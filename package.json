@@ -13,7 +13,7 @@
     "compile": "tsc -p ./",
     "test-compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "publish": "vsce publish minor -p hif4a3imvjillhh3urelicawlaqemvtz7vhxf7ptwllaq6yixdaq",
+    "publish": "vsce publish minor",
     "webpack": "webpack --mode development",
     "vscode:prepublish": "webpack --mode production",
     "webpack-dev": "webpack --mode development --watch",
