@@ -130,22 +130,22 @@ export class AudioRecorderCommands {
           vscode.window.showQuickPick([
             {
               label: "组件模板"
-						},
-						{
+            },
+            {
               label: "容器模板"
-						},
-						{
+            },
+            {
               label: "推送分支"
-						},
-						{
+            },
+            {
               label: "注册页面"
-						},
-						{
+            },
+            {
               label: "文件依赖"
-						},
-						{
+            },
+            {
               label: "选中复制"
-						},
+            }
           ]);
         }
       )
@@ -231,10 +231,15 @@ export class AudioRecorderCommands {
       return;
     }
 
+    if (/来个组件/.test(result)) {
+      vscode.commands.executeCommand("LeAppPlugin.CompletionRNComponent");
+    }
     if (result.includes("组件模板")) {
       vscode.commands.executeCommand("LeAppPlugin.CompletionRNComponent");
     }
-
+    if (/来个页面/.test(result)) {
+      vscode.commands.executeCommand("LeAppPlugin.CompletionRNContainer");
+    }
     if (result.includes("容器模板")) {
       vscode.commands.executeCommand("LeAppPlugin.CompletionRNContainer");
     }
@@ -251,7 +256,7 @@ export class AudioRecorderCommands {
       vscode.commands.executeCommand("LeAppPlugin.showFileParentsInPick");
     }
 
-    if (result.includes("选中复制")) {
+    if (/选中/.test(result) || result.includes("选中复制")) {
       const text = selectText({ includeBrack: false });
       if (text) {
         vscode.env.clipboard.writeText(text);
