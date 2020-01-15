@@ -41,7 +41,7 @@ export class CommandsHelpers {
 	}
 }
 
-function insertTextAtFile(filePath: string, content: string, tag: string, offset: number = 0) {
+export function insertTextAtFile(filePath: string, content: string, tag: string, offset: number = 0) {
 	const fileString = fs.readFileSync(filePath, 'utf-8')
 	// if (fileString.includes(content)) {
 	// 	return false
@@ -53,7 +53,7 @@ function insertTextAtFile(filePath: string, content: string, tag: string, offset
 	return true
 }
 
-function insertTextAtFileLineBreakStart(filePath: string, content: string, tag: string) {
+export function insertTextAtFileLineBreakStart(filePath: string, content: string, tag: string) {
 	const fileString = fs.readFileSync(filePath, 'utf-8')
 	// if (fileString.includes(content)) {
 	// 	return false

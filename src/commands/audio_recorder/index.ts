@@ -88,6 +88,97 @@ export class AudioRecorderCommands {
     this.init(context);
   }
 
+  getCommands() {
+    return [
+      {
+        regs: [/^组件(?!<[\u4e00-\u9fa5]>)。?/, /来个组件/, /组件模板/],
+        desc: "创建组件模板",
+        onDo: () => {
+          vscode.commands.executeCommand("LeAppPlugin.CompletionRNComponent");
+        }
+      },
+      {
+        regs: [/^页面(?!<[\u4e00-\u9fa5]>)。?/, /来个页面/, /页面模板/],
+        desc: "创建页面模板代码",
+        onDo: () => {
+          vscode.commands.executeCommand("LeAppPlugin.CompletionRNContainer");
+        }
+      },
+      {
+        regs: [/^推送?(?![\u4e00-\u9fa5])/, /推送分支/, /(P|p)ush/],
+        desc: "推送分支",
+        onDo: () => {
+          CommandsHelpers.gitPush();
+        }
+      },
+      {
+        regs: [/^拉取?(?![\u4e00-\u9fa5])/, /拉取分支/, /(P|p)ull/],
+        desc: "拉取分支",
+        onDo: () => {
+          vscode.commands.executeCommand("git.fetch");
+        }
+      },
+      {
+        regs: [/^历史(?![\u4e00-\u9fa5])/, /文件历史/, ],
+        desc: "在gitlens中显示文件历史",
+        onDo: () => {
+          vscode.commands.executeCommand("gitlens.showFileHistoryInView");
+        }
+      },
+      {
+        regs: [/^命令行(?![\u4e00-\u9fa5])/, /terminal/, /Terminal/],
+        desc: "打开命令行",
+        onDo: () => {
+          vscode.commands.executeCommand("workbench.action.terminal.focus");
+        }
+      },
+      {
+        regs: [/^调试(?![\u4e00-\u9fa5])/, /调试文件/],
+        desc: "模拟调试当前文件",
+        onDo: () => {
+          vscode.commands.executeCommand("LeAppPlugin.debugCurrentFile");
+        }
+      },
+      {
+        regs: [/^注册页面/],
+        desc: "在navigation和container文件下写入当前容器引用",
+        onDo: () => {
+          CommandsHelpers.insertContainer();
+        }
+      },
+      {
+        regs: [/^选中/, /选中复制/],
+        desc: "在navigation和container文件下写入当前容器引用",
+        onDo: () => {
+          const text = selectText({ includeBrack: false });
+          if (text) {
+            vscode.env.clipboard.writeText(text);
+          }
+        }
+      }
+    ];
+  }
+  async handleResult(data: { result: string; status: string }) {
+    const { result, status } = data;
+
+    if (status !== "success") {
+      vscode.window.showErrorMessage("连接错误，识别失败");
+      return;
+    }
+
+    let findCommand = false;
+    this.getCommands().every(command => {
+      command.regs.every(reg => {
+        if (reg.test(result)) {
+          findCommand = true;
+          command.onDo();
+          return !findCommand;
+        }
+      });
+      return !findCommand;
+    });
+  }
+
   init(context) {
     context.subscriptions.push(
       vscode.commands.registerCommand(
@@ -221,47 +312,6 @@ export class AudioRecorderCommands {
     });
     audioRecorder.stop();
     return fileName;
-  }
-
-  async handleResult(data: { result: string; status: string }) {
-    const { result, status } = data;
-
-    if (status !== "success") {
-      vscode.window.showErrorMessage("连接错误，识别失败");
-      return;
-    }
-
-    if (/来个组件/.test(result)) {
-      vscode.commands.executeCommand("LeAppPlugin.CompletionRNComponent");
-    }
-    if (result.includes("组件模板")) {
-      vscode.commands.executeCommand("LeAppPlugin.CompletionRNComponent");
-    }
-    if (/来个页面/.test(result)) {
-      vscode.commands.executeCommand("LeAppPlugin.CompletionRNContainer");
-    }
-    if (result.includes("容器模板")) {
-      vscode.commands.executeCommand("LeAppPlugin.CompletionRNContainer");
-    }
-
-    if (result.includes("推送分支")) {
-      CommandsHelpers.gitPush();
-    }
-
-    if (result.includes("注册页面")) {
-      CommandsHelpers.insertContainer();
-    }
-
-    if (result.includes("文件依赖")) {
-      vscode.commands.executeCommand("LeAppPlugin.showFileParentsInPick");
-    }
-
-    if (/选中/.test(result) || result.includes("选中复制")) {
-      const text = selectText({ includeBrack: false });
-      if (text) {
-        vscode.env.clipboard.writeText(text);
-      }
-    }
   }
 
   async continueRecognition() {

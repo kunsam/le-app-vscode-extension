@@ -51,6 +51,7 @@
     "onCommand:LeAppPlugin.SearchRouterByTag",
     "onCommand:LeAppPlugin.StartLeReactCoder",
     "onCommand:LeAppPlugin.speechRecognition",
+    "onCommand:LeAppPlugin.debugCurrentFile",
     "onCommand:LeAppPlugin.openExtensionSearchEgnine"
   ],
   "contributes": {
@@ -180,6 +181,11 @@
       {
         "command": "LeAppPlugin.checkSpeechRecognitionCommands",
         "title": "语音命令列表",
+        "category": "LeAppPlugin"
+      },
+      {
+        "command": "LeAppPlugin.debugCurrentFile",
+        "title": "模拟调试当前文件",
         "category": "LeAppPlugin"
       }
     ],

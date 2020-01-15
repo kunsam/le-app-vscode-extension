@@ -171,7 +171,7 @@ export default class NavigatorsCommand {
         "LeAppPlugin.refreshRouterManager",
         () => {
           this.navigatorTree = undefined;
-          fs.unlinkSync(AllIMPORTS_CACHE_PATH)
+          fs.unlinkSync(AllIMPORTS_CACHE_PATH);
           this.init();
         }
       )
@@ -348,7 +348,120 @@ export default class NavigatorsCommand {
       )
     );
 
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "LeAppPlugin.debugCurrentFile",
+        async () => {
+          if (!this.navigatorTree) {
+            await vscode.commands.executeCommand(
+              "LeAppPlugin.activeRouterManager"
+            );
+          }
+          const name = await this._getFileNavigationName();
+          if (!name) {
+            vscode.window.showErrorMessage("未找到结果");
+            return;
+          }
+          const containerPath = path.join(
+            ROOT_PATH,
+            "src/containers/home/index.js"
+          );
+          let containerFileString = fs
+            .readFileSync(containerPath, "utf-8")
+            .replace(/\/\/\sDEBUG\-ANCHOR(.|\n)*\/\/\sDEBUG\-ANCHOR/g, "");
+
+          const tabString = (index = 0) =>
+            new Array(2 + index).fill(null).join("    ");
+          let insertText = `\n${tabString(0)}// DEBUG-ANCHOR\n`;
+          insertText += `${tabString(1)}if (1) {\n`;
+          insertText += `${tabString(
+            2
+          )}this.props.navigation.navigate('${name}')\n`;
+          insertText += `${tabString(2)}return\n`;
+          insertText += `${tabString(1)}}\n`;
+          insertText += `${tabString(0)}// DEBUG-ANCHOR\n`;
+          const findStartIndex = containerFileString.indexOf(
+            "componentDidMount"
+          );
+          let targetIndex = -1;
+          if (findStartIndex > -1) {
+            let matchTargetNumber = 0;
+            for (let i = findStartIndex; i < containerFileString.length; i++) {
+              if (containerFileString[i] === "}") {
+                matchTargetNumber--;
+                if (matchTargetNumber === 0) {
+                  targetIndex = i;
+                  break;
+                }
+              }
+              if (containerFileString[i] === "{") {
+                matchTargetNumber++;
+              }
+            }
+          }
+          if (targetIndex > -1) {
+            targetIndex = targetIndex - 3; // 往前移动3位
+            const pre = containerFileString.slice(0, targetIndex);
+            const suf = containerFileString.slice(targetIndex);
+            fs.writeFileSync(containerPath, `${pre}${insertText}${suf}`);
+            return;
+          }
+          vscode.window.showErrorMessage("写入失败，请自行粘贴文字");
+          vscode.env.clipboard.writeText(insertText).then(() => {
+            GotoTextDocument(containerPath);
+          });
+        }
+      )
+    );
+
     this._registerSearchRouterByTagCommand(context);
+  }
+
+  _getFileNavigationName() {
+    return new Promise(res => {
+      const uri = vscode.window.activeTextEditor.document.uri;
+      if (!uri) {
+        vscode.window.showInformationMessage("不存在打开的文档");
+        res("");
+        return;
+      }
+      const name = this.navigatorTree.queryNavigatorNameByPath(uri.fsPath);
+      if (name) {
+        res(name);
+        return;
+      }
+      const parentList = this.navigatorTree.getFileNodeParentsFlow(uri.fsPath);
+      let result: { name: string; path: string }[] = [];
+      parentList.forEach(list => {
+        let hasResult = false;
+        list.forEach(data => {
+          if (hasResult) {
+            return;
+          }
+          const name = this.navigatorTree.queryNavigatorNameByPath(data.fspath);
+          if (name) {
+            hasResult = true;
+            result.push({
+              name: name,
+              path: data.fspath
+            });
+          }
+        });
+      });
+      pickFiles2Open(
+        result.map(r => ({
+          label: r.name,
+          target: r.path
+        })),
+        false,
+        "",
+        {
+          onPick: result => {
+            res(result.label);
+          }
+        }
+      );
+    });
   }
 
   _registerSearchRouterByTagCommand(context: vscode.ExtensionContext) {
