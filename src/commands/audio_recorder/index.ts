@@ -148,7 +148,7 @@ export class AudioRecorderCommands {
       },
       {
         regs: [/^选中/, /选中复制/],
-        desc: "在navigation和container文件下写入当前容器引用",
+        desc: "选中并复制括号或引号中间区域",
         onDo: () => {
           const text = selectText({ includeBrack: false });
           if (text) {
@@ -172,8 +172,8 @@ export class AudioRecorderCommands {
         if (reg.test(result)) {
           findCommand = true;
           command.onDo();
-          return !findCommand;
         }
+        return !findCommand;
       });
       return !findCommand;
     });
@@ -218,26 +218,14 @@ export class AudioRecorderCommands {
       vscode.commands.registerCommand(
         "LeAppPlugin.checkSpeechRecognitionCommands",
         () => {
-          vscode.window.showQuickPick([
-            {
-              label: "组件模板"
-            },
-            {
-              label: "容器模板"
-            },
-            {
-              label: "推送分支"
-            },
-            {
-              label: "注册页面"
-            },
-            {
-              label: "文件依赖"
-            },
-            {
-              label: "选中复制"
-            }
-          ]);
+          let labels: { label: string }[] = []
+          this.getCommands().forEach(d => {
+            labels.push({ label: `➡️${d.desc}` })
+            d.regs.forEach(reg => {
+              labels.push({ label: '     ' + String(reg)})
+            })
+          })
+          vscode.window.showQuickPick(labels);
         }
       )
     );
