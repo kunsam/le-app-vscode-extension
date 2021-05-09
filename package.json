@@ -37,7 +37,7 @@
     "le-ts-code-tool": "^1.0.56",
     "lodash": "^4.17.15",
     "node-audiorecorder": "^1.4.2",
-    "url-parse": "^1.4.7",
+    "url-parse": "^1.5.0",
     "ws": "^7.2.1"
   },
   "activationEvents": [
