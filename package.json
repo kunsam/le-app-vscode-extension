@@ -38,7 +38,7 @@
     "lodash": "^4.17.15",
     "node-audiorecorder": "^1.4.2",
     "url-parse": "^1.4.7",
-    "ws": "^7.2.1"
+    "ws": "^7.4.6"
   },
   "activationEvents": [
     "onView:LeAppPlugin",
